@@ -18,7 +18,7 @@ public class OnlineReplenishment {
         driver = new ChromeDriver();
         driver.get("https://mts.by/");
     }
-
+//Закрываем все окна
     @AfterEach
     public void tearDown() {
         driver.quit();
@@ -26,18 +26,16 @@ public class OnlineReplenishment {
 
     @Test
     public void testBlockTitle() {
-        // Проверить название указанного блока
-        WebElement blockTitle = driver.findElement(By.xpath("//*[@id=\"pay-section\"]/div/div/div[2]/section/div/h2"));
+        WebElement blockTitle = driver.findElement(By.xpath(
+                "//*[@id=\"pay-section\"]/div/div/div[2]/section/div/h2"));
         assertEquals("Онлайн пополнение\nбез комиссии", blockTitle.getText());
-        if (blockTitle.getText().equals("Онлайн пополнение\nбез комиссии")) {
-            System.out.println("Тест пройден успешно");
-        }
+        System.out.println("Тест пройден успешно");
     }
 
     @Test
     public void testPaymentLogosPresence() {
         WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
-        // Проверить наличие логотипов платежных систем
+
         WebElement paymentLogo1 = wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath
                 ("//*[@id=\"pay-section\"]/div/div/div[2]/section/div/div[2]/ul/li[1]/img")));
         WebElement paymentLogo2 = wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath
@@ -54,41 +52,33 @@ public class OnlineReplenishment {
         assertTrue(paymentLogo3.isDisplayed());
         assertTrue(paymentLogo4.isDisplayed());
         assertTrue(paymentLogo5.isDisplayed());
-
     }
 
     @Test
     public void testLinkMoreInfo() {
-        // Проверить работу ссылки "Подробнее о сервисе"
         WebElement moreInfoLink = driver.findElement(By.linkText("Подробнее о сервисе"));
         moreInfoLink.click();
-        // Проверяем, что произошло перенаправление на правильную страницу
+
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
+        wait.until(ExpectedConditions.urlToBe("https://www.mts.by/help/poryadok-oplaty-i-bezopasnost-internet-platezhey/"));
+
         assertEquals("https://www.mts.by/help/poryadok-oplaty-i-bezopasnost-internet-platezhey/", driver.getCurrentUrl());
-        if (driver.getCurrentUrl().equals("https://www.mts.by/help/poryadok-oplaty-i-bezopasnost-internet-platezhey/")) {
-            System.out.println("Тест пройден успешно");
-        }
+        System.out.println("Тест пройден успешно");
     }
 
     @Test
     public void testFormAndButtonContinue() {
-        // Заполнить поля и проверить работу кнопки "Продолжить"
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
 
-        WebElement phoneNumberField = driver.findElement(By.id("connection-phone"));
+        WebElement phoneNumberField = wait.until(ExpectedConditions.elementToBeClickable(By.id("connection-phone")));
         phoneNumberField.sendKeys("297777777");
 
         WebElement sum = driver.findElement(By.id("connection-sum"));
         sum.sendKeys("100");
 
-        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
-        JavascriptExecutor executor = (JavascriptExecutor) driver;
         WebElement continueButton = wait.until(ExpectedConditions.elementToBeClickable(By.cssSelector(".button.button__default")));
-        executor.executeScript("arguments[0].click();", continueButton);
+        continueButton.click();
 
-        if (continueButton != null && continueButton.isDisplayed() && continueButton.isEnabled()) {
-            continueButton.click();
-        } else {
-            System.out.println("Элемент не кликабельный в текущем состоянии.");
-        }
-
+        System.out.println("Тест пройден успешно");
     }
 }
